@@ -12,7 +12,7 @@ public class Board {
 
     private final List<List<Space>> spaces;
 
-    public Board(List<List<Space>> spaces) {
+    public Board(final List<List<Space>> spaces) {
         this.spaces = spaces;
     }
 
@@ -20,26 +20,26 @@ public class Board {
         return spaces;
     }
 
-    public GameStatusEnum getStatusEnum() {
-        if(spaces.stream().flatMap(Collection::stream).noneMatch(s -> !s.isFixed() && nonNull(s.getActual()))) {
-            return  NON_STARTED;
+    public GameStatusEnum getStatusEnum(){
+        if (spaces.stream().flatMap(Collection::stream).noneMatch(s -> !s.isFixed() && nonNull(s.getActual()))){
+            return NON_STARTED;
         }
 
         return spaces.stream().flatMap(Collection::stream).anyMatch(s -> isNull(s.getActual())) ? INCOMPLETE : COMPLETE;
     }
 
-    public boolean hasErrors() {
-        if(getStatusEnum() == NON_STARTED) {
+    public boolean hasErrors(){
+        if(getStatusEnum() == NON_STARTED){
             return false;
         }
 
-        return spaces.stream().flatMap(Collection::stream).anyMatch(s -> isNull(s.getActual()) && !s.getActual().equals(s.getExpected()));
+        return spaces.stream().flatMap(Collection::stream)
+                .anyMatch(s -> nonNull(s.getActual()) && !s.getActual().equals(s.getExpected()));
     }
 
-    public boolean changeValue(final int col, final int row, final Integer value) {
+    public boolean changeValue(final int col, final int row, final int value){
         var space = spaces.get(col).get(row);
-
-        if (space.isFixed()) {
+        if (space.isFixed()){
             return false;
         }
 
@@ -47,10 +47,9 @@ public class Board {
         return true;
     }
 
-    public boolean clearValue(final int col, final int row) {
+    public boolean clearValue(final int col, final int row){
         var space = spaces.get(col).get(row);
-
-        if (space.isFixed()) {
+        if (space.isFixed()){
             return false;
         }
 
@@ -58,11 +57,11 @@ public class Board {
         return true;
     }
 
-    public void reset() {
+    public void reset(){
         spaces.forEach(c -> c.forEach(Space::clearSpace));
     }
-    
-    public boolean gameIsFinished() {
+
+    public boolean gameIsFinished(){
         return !hasErrors() && getStatusEnum().equals(COMPLETE);
     }
 }
